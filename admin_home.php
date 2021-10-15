@@ -67,7 +67,19 @@
       <div class="form-group">
                 <h2>Delete Clerks</h2>
             <select class='form-control' required value=1 name="ClDelEmail">
-            
+            <?php 
+                $result = getListOfEmails('clerks');
+
+                if(is_bool($result)){
+                  echo "No clerks found in database";
+                }else{
+                  while($row = $result->fetch_array())
+                  {
+                    echo "<option value='" . $row['email'] . "'>" . $row['email'] . "</option>";
+                  }
+                }
+
+            ?>
             </select>
             </div>
             <div class="form-group">
@@ -100,7 +112,11 @@
             <select class='form-control' required value=1 name="dSpecialist">
               <option value="Audiologist" class="option">Audiologist - Ear Expert</option>
               <option value="Allergist" class="option">Allergist - Allergy Expert</option>
-              
+              <option value="Anesthesiologist" class="option">Anesthesiologist - Anesthetic Expert</option>
+              <option value="Cardiologist" class="option">Cardiologist - Heart Expert</option>
+              <option value="Dentist" class="option">Dentist - Oral Care Expert</option>
+              <option value="Dermatologist" class="option">Dermatologist - Skin Expert</option>
+              <option value="Endocrinologist" class="option">Endocrinologist - Endocrine Expert</option>
             </select>
         </div>
 
@@ -124,7 +140,13 @@
                 if(is_bool($result)){
                   echo "No doctors found in database";
                 }else{
-                 
+                  while($row = $result->fetch_array())
+                  {
+                    echo "<option value='" . $row['email'] . "'>" . $row['email'] . "</option>";
+                  }
+                  echo '&emsp;';
+
+                }
 
             ?>
             </select></div>
