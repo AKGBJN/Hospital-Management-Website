@@ -43,6 +43,21 @@
     $endingTag = "</td></tr>";
     echo "<tr>";   // appointment_no, full_name, dob, weight, phone_no, address, blood_group, medical_condition
 
+    echo "$link Appointment No $mid". $row['appointment_no'] . "$endingTag";
+    echo "$link Full Name $mid" . $row['full_name'] . "$endingTag";
+    echo "$link Age (in years) $mid" . $row['dob'] . "$endingTag";
+
+    echo "$link Weight $mid" . $row['weight'] . "$endingTag";
+
+    echo "$link Phone No $mid" . $row['phone_no'] . "$endingTag";
+
+    echo "$link Address $mid" . $row['address'] . "$endingTag";
+
+    echo "$link Medical Condition $mid" . $row['medical_condition'] . "$endingTag";
+
+
+    echo "$link Payment $mid" . "<form action='payment.php' method='post'>
+
 
           <select required value=1 class ='form-control' name='payment' style='width: 500;'>
                 <option value='admin' class='option'>200</option>
