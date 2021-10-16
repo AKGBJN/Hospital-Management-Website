@@ -43,6 +43,12 @@
 		}else if (appointment_status((int) $row['appointment_no']) == 2){
 			$status= "table-success";
 		}
+
+		$link = "<td ><a href= 'payment.php?appointment_no=" . $row['appointment_no'] . "'>";
+		$endingTag = "</a></td>";
+		echo "<tr class=\"" . $status . "\"> ";
+		echo "$link". $row['appointment_no'] . "$endingTag";
+		echo "$link" . $row['full_name'] . "$endingTag";
 		echo "$link" . $row['medical_condition'] . "$endingTag";
 		echo "$link" . $row['speciality'] . "$endingTag";
 		echo "</tr>";
