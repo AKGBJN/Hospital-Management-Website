@@ -23,6 +23,13 @@
     {
         global $connection;
 
+        $email_id = secure($email_id_unsafe);
+        $password = secure($password_unsafe);
+
+        $sql = "SELECT COUNT(*) FROM $table WHERE email = '$email_id' AND password = '$password';";
+
+        $result = $connection->query($sql);
+
         $num_rows = (int) $result->fetch_array()['0'];
 
         if ($num_rows > 1) {
@@ -33,6 +40,29 @@
 
             return 0;
         } else {
+            echo "<div class='alert alert-success'> <strong>Well done!</strong> Logged In</div>";
+            $_SESSION['username'] = $email_id;
+
+            if ($table == 'admin') {
+                $_SESSION['user-type'] = 'admin';
+            }
+
+            if ($table == 'users' || $table == 'doctors' || $table == 'clerks') {
+                $sql = "SELECT fullname FROM $table WHERE email = '$email_id' AND password = '$password';";
+
+                $result = $connection->query($sql);
+
+                $fullname = $result->fetch_array()['fullname'];
+                $_SESSION['fullname'] = $fullname;
+                if ($table == 'users') {
+                    $_SESSION['user-type'] = 'normal';
+                } elseif ($table == 'clerks') {
+                    $_SESSION['user-type'] = 'clerk';
+                } else {
+                    $_SESSION['user-type'] = 'doctor';
+                }
+            }
+
             return 1;
         }
     }
@@ -89,6 +119,24 @@
             case 'record-dup':
                 return "$fail Duplicate record exists. $end";
                 break;
+            case 'no-match':
+                return "$fail Record did not match. $end";
+                break;
+            case 'con-failed':
+                return "$fail connection Failed! $end";
+                break;
+            case 'appointment-success':
+                return "$success Your appointment is booked successfully! Your appointment no is $data $end";
+                break;
+            case 'appointment-fail':
+                return "$fail Failed to book your appointment Failed! $end";
+                break;
+            case 'update-success':
+                return "$success New record updated successfully! $end";
+                break;
+            case 'update-fail':
+                return "$fail Failed to update data! $end";
+                break;
             default:
                 // code...
                 break;
@@ -121,7 +169,18 @@
     function appointment_booking($patient_id_unsafe, $specialist_unsafe, $medical_condition_unsafe)
     {
         global $connection;
-        
+        $patient_id = secure($patient_id_unsafe);
+        $specialist = secure($specialist_unsafe);
+        $medical_condition = secure($medical_condition_unsafe);
+
+        $sql = "INSERT INTO appointments VALUES (NULL, $patient_id, '$specialist', '$medical_condition', NULL, NULL, 'no')";
+
+        if ($connection->query($sql) === true) {
+            echo status('appointment-success', $connection->insert_id);
+        } else {
+            echo status('appointment-fail');
+            echo 'Error: '.$sql.'<br>'.$connection->error;
+        }
     }
 
     function update_appointment_info($appointment_no_unsafe, $column_name_unsafe, $data_unsafe)
