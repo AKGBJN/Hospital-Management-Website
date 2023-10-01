@@ -3,21 +3,47 @@
 if (!isset($_SESSION)) {
     session_start();
 }
-?>
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="jumbotron.css" rel="stylesheet">
-<?php
+
+// Include CSS files and common header
 include("header.php");
 include("library.php");
+include('nav-bar.php');
 
 // Functions to restrict access for different user roles
-noAccessForDoctor();
-noAccessForNormal();
-noAccessForAdmin();
-noAccessIfNotLoggedIn();
+function restrictAccess() {
+    noAccessForDoctor();
+    noAccessForNormal();
+    noAccessForAdmin();
+    noAccessIfNotLoggedIn();
+}
 
-include('nav-bar.php');
+// Function to render the appointment table row
+function renderTableRow($row) {
+    $status = ' ';
+    $appointmentNo = (int)$row['appointment_no'];
+
+    // Determine appointment status and apply appropriate CSS class
+    if (appointment_status($appointmentNo) == 1) {
+        $status = "table-active";
+    } else if (appointment_status($appointmentNo) == 2) {
+        $status = "table-success";
+    }
+
+    $link = "<td><a href='payment.php?appointment_no=$appointmentNo'>";
+    $endingTag = "</a></td>";
+
+    echo "<tr class=\"$status\">";
+    echo "$link" . $row['appointment_no'] . "$endingTag";
+    echo "$link" . $row['full_name'] . "$endingTag";
+    echo "$link" . $row['medical_condition'] . "$endingTag";
+    echo "$link" . $row['speciality'] . "$endingTag";
+    echo "</tr>";
+}
+
 ?>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="jumbotron.css" rel="stylesheet>
 
 <div class="container">
     <h2>All Appointments</h2>
@@ -36,32 +62,11 @@ include('nav-bar.php');
         // Retrieve all appointments
         $result = getAllAppointments();
 
-        // Function to render table rows for appointments
-        function renderTable($row)
-        {
-            $status = ' ';
-            $appointmentNo = (int)$row['appointment_no'];
-
-            // Determine appointment status and apply appropriate CSS class
-            if (appointment_status($appointmentNo) == 1) {
-                $status = "table-active";
-            } else if (appointment_status($appointmentNo) == 2) {
-                $status = "table-success";
-            }
-
-            $link = "<td><a href='payment.php?appointment_no=$appointmentNo'>";
-            $endingTag = "</a></td>";
-
-            echo "<tr class=\"$status\">";
-            echo "$link" . $row['appointment_no'] . "$endingTag";
-            echo "$link" . $row['full_name'] . "$endingTag";
-            echo "$link" . $row['medical_condition'] . "$endingTag";
-            echo "$link" . $row['speciality'] . "$endingTag";
-            echo "</tr>";
-        }
+        // Restrict access based on user role
+        restrictAccess();
 
         while ($row = $result->fetch_array()) {
-            renderTable($row);
+            renderTableRow($row);
         }
         ?>
     </table>
